@@ -1,18 +1,24 @@
 class Parser:
     def __init__(self, file_name):
         self._lines = []
+        lines = None
 
         with open(file_name, 'r') as infile:
-            for line in infile:
+            lines = infile.readlines()
+            for line in lines:
                 if line[-1] == '\n': #remove new lines
                     line = line[:-1]
                 self._lines.append( [int(num) for num in line.split(' ')] ) #split numbers into a list by line
 
         self._tuples = self._parse_tuples() #extract tuple list
-        self._triples = self._parse_triples() #extract triple list
+        if len(lines) == 2: #initializes the physical memory via text file; otherwise, it's something else.
+            self._triples = self._parse_triples() #extract triple list
 
-        print(self._tuples)
-        print(self._triples)
+    def get_tuples(self):
+        return list(self._tuples)
+
+    def get_triples(self):
+        return list(self._triples)
 
     def _parse_tuples(self, lines = None):
         if (self._lines_used(lines)):
@@ -43,4 +49,4 @@ class Parser:
         return False
 
 if __name__ == '__main__':
-    Parser("input.txt")
+    p = Parser("pm.txt")
