@@ -11,7 +11,7 @@ class PM:
         self._parser = Parser(file_name)
         self._seg_table = self._frames[0]
         self._bitmap = Bitmap()
-        self._bitmap.set_bit(0) # Segment table occupies the first bit of the bitmap.
+        self._bitmap.set_bit(0)  # Segment table occupies the first bit of the bitmap.
 
         self.init_seg_table()
         self.init_page_table()
@@ -31,10 +31,13 @@ class PM:
     def init_page_table(self):
         for p, s, f in self._parser.get_triples():
             address_of_page_table = self._seg_table[s]
+
             if address_of_page_table != -1:
                 idx = PM.get_index(address_of_page_table) # self._seg_table[s] should always be a power of 2...
-                self._frames[idx][p] = f
-                if f != -1:
+
+                address_of_page = f
+                self._frames[idx][p] = address_of_page
+                if address_of_page != -1:
                     self._bitmap.set_bit(PM.get_index(f))
 
     @staticmethod
