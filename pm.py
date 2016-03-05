@@ -1,4 +1,4 @@
-from kyleParser import *
+from inputparser import *
 from frame import *
 from bitmap import *
 
