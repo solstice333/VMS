@@ -3,6 +3,7 @@ from bitmap import TooDamnMuchDammitError
 import re
 import unittest
 
+
 class TestBitmap(unittest.TestCase):
    def test_ctor(self):
       b = Bitmap()
