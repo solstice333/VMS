@@ -4,10 +4,10 @@ from bitmap import *
 
 
 class PM:
-    size = 1024
+    SIZE = 1024
 
     def __init__(self, file_name):
-        self._frames = [Frame() for i in range(PM.size)]
+        self._frames = [Frame() for i in range(PM.SIZE)]
         self._parser = Parser(file_name)
         self._seg_table = self._frames[0]
         self._bitmap = Bitmap()
@@ -15,11 +15,12 @@ class PM:
         self._init_seg_table()
         self._init_page_table()
 
-        print(self._bitmap)
-
     @staticmethod
     def get_index_from_words(words):
         return words // Frame.get_size()
+
+    def get_bitmap(self):
+        return str(self._bitmap)
 
     def _init_seg_table(self):
         for s, address_of_page_table in self._parser.get_pairs():
