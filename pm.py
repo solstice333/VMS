@@ -18,27 +18,25 @@ class PM:
         print(self._bitmap)
 
     @staticmethod
-    def get_index(words):
+    def get_index_from_words(words):
         return words // Frame.get_size()
 
     def _init_seg_table(self):
-        for s, f in self._parser.get_pairs():
-            self._seg_table[s] = f
+        for s, address_of_page_table in self._parser.get_pairs():
+            self._seg_table[s] = address_of_page_table
 
-            address_of_page_table = self._seg_table[s]
             if address_of_page_table != -1:
-                idx = PM.get_index(address_of_page_table)
+                idx = PM.get_index_from_words(address_of_page_table)
                 self._bitmap.set_bit(idx)
                 self._bitmap.set_bit(idx + 1)
 
     def _init_page_table(self):
-        for p, s, f in self._parser.get_triples():
+        for p, s, address_of_page in self._parser.get_triples():
             address_of_page_table = self._seg_table[s]
 
             if address_of_page_table != -1:
-                idx = PM.get_index(address_of_page_table) # self._seg_table[s] should always be a power of 2...
+                idx = PM.get_index_from_words(address_of_page_table) # self._seg_table[s] should always be a power of 2...
 
-                address_of_page = f
                 self._frames[idx][p] = address_of_page
                 if address_of_page != -1:
-                    self._bitmap.set_bit(PM.get_index(f))
+                    self._bitmap.set_bit(PM.get_index_from_words(address_of_page))
