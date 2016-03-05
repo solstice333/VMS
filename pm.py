@@ -1,6 +1,7 @@
 from inputparser import *
 from frame import *
 from bitmap import *
+from exceptions import *
 
 
 class PM:
@@ -21,6 +22,15 @@ class PM:
 
     def get_bitmap(self):
         return str(self._bitmap)
+
+    def __getitem__(self, idx):
+        if type(idx) is not int:
+            raise IsNotNumericalValue
+
+        if idx < 0 or idx >= PM.SIZE * Frame.SIZE:
+            raise IndexError("PM index out of range")
+
+        return self._frames[idx // Frame.SIZE][idx % Frame.SIZE]
 
     def _init_seg_table(self):
         for s, address_of_page_table in self._parser.get_pairs():

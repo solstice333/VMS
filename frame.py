@@ -2,17 +2,17 @@ from exceptions import *
 
 
 class Frame:
-    size = 512
+    SIZE = 512
 
     def __init__(self):
-        self._words = [0] * Frame.size
+        self._words = [0] * Frame.SIZE
 
     def __getitem__(self, item):
         if type(item) is not int:
             raise IsNotNumericalValue
 
-        if item < 0 or item >= Frame.size:
-            raise IndexingError
+        if item < 0 or item >= Frame.SIZE:
+            raise IndexError
 
         return self._words[item]
 
@@ -20,8 +20,8 @@ class Frame:
         if type(key) is not int or type(value) is not int:
             raise IsNotNumericalValue
 
-        if key < 0 or key >= Frame.size:
-            raise IndexingError
+        if key < 0 or key >= Frame.SIZE:
+            raise IndexError("Frame index out of range")
 
         if value > 2**32 - 1:
             raise ValueTooLarge
@@ -33,10 +33,10 @@ class Frame:
 
     @classmethod
     def get_size(cls):
-        return cls.size
+        return cls.SIZE
 
 
 if __name__ == '__main__':
-    f = Frame(10)
+    f = Frame()
     f[0] = 2
     print(f)

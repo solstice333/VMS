@@ -7,11 +7,6 @@ class TooDamnMuchDammitError(AttributeError):
         return "Error: Max is 1024 bits, thus 2**1024 - 1 is the max"
 
 
-class IndexingError(AttributeError):
-    def __str__(self):
-        return "Error: Cannot index out of range values"
-
-
 class IsNotNumericalValue(AttributeError):
     def __str__(self):
         return "Error: Value is not a numeric"
