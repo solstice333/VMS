@@ -12,13 +12,16 @@ class PM:
         self._seg_table = self._frames[0]
         self._bitmap = Bitmap()
         self._bitmap.set_bit(0)  # Segment table occupies the first bit of the bitmap.
-
-        self.init_seg_table()
-        self.init_page_table()
+        self._init_seg_table()
+        self._init_page_table()
 
         print(self._bitmap)
 
-    def init_seg_table(self):
+    @staticmethod
+    def get_index(words):
+        return words // Frame.get_size()
+
+    def _init_seg_table(self):
         for s, f in self._parser.get_pairs():
             self._seg_table[s] = f
 
@@ -28,7 +31,7 @@ class PM:
                 self._bitmap.set_bit(idx)
                 self._bitmap.set_bit(idx + 1)
 
-    def init_page_table(self):
+    def _init_page_table(self):
         for p, s, f in self._parser.get_triples():
             address_of_page_table = self._seg_table[s]
 
@@ -39,7 +42,3 @@ class PM:
                 self._frames[idx][p] = address_of_page
                 if address_of_page != -1:
                     self._bitmap.set_bit(PM.get_index(f))
-
-    @staticmethod
-    def get_index(words):
-        return words // Frame.get_size()
