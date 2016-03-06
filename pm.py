@@ -48,8 +48,8 @@ class PM:
         i = self._bitmap.find_next_empty_bit()
         self._bitmap.set_bit(i)
 
-    def set_next_empty_bits(self):
-        i = self._bitmap.find_next_empty_bits()
+    def set_next_empty_pair_bits(self):
+        i = self._bitmap.find_next_empty_pair_bits()
         self._bitmap.set_bit(i)
         self._bitmap.set_bit(i+1)
 

@@ -44,7 +44,7 @@ def eval_addr_for_wr(outfile, pm, num, one_or_two_bits):
         if one_or_two_bits == 1:
             pm.set_next_empty_bit()
         else:
-            pm.set_next_empty_bits()
+            pm.set_next_empty_pair_bits()
     return True
 
 

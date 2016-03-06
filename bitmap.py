@@ -51,13 +51,13 @@ class Bitmap:
 
     def find_next_empty_bit(self):
         for i in range(Bitmap.MAX_BIT + 1):
-            if self.is_bit_set(i):
+            if not self.is_bit_set(i):
                 return i
         return -1
 
-    def find_next_empty_bits(self):
+    def find_next_empty_pair_bits(self):
         for i in range(Bitmap.MAX_BIT):
-            if self.is_bit_set(i) and self.is_bit_set(i + 1):
+            if not self.is_bit_set(i) and not self.is_bit_set(i + 1):
                 return i
         return -1
 
