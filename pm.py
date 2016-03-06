@@ -31,7 +31,10 @@ class PM:
         if type(idx) is not int:
             raise IsNotNumericalValue
 
-        if idx < 0 or idx >= PM.SIZE * Frame.SIZE:
+        if idx < 0:
+            raise PFError
+
+        if idx >= PM.SIZE * Frame.SIZE:
             raise IndexError("PM index out of range")
 
         return self._frames[idx // Frame.SIZE][idx % Frame.SIZE]

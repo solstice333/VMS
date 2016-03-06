@@ -13,6 +13,7 @@ class CPU:
         else:
             for wr, va in self._pairs_of_virtual_addresses.get_pairs():
                 s, p, w = self._split_virtual_address(va)
+
                 if wr == 1:  # Write only
                     self._write(s, p, w)
                 else:  # Ready only
@@ -22,17 +23,24 @@ class CPU:
         if not self._eval_addr_for_wr(s, True):
             self._eval_addr_for_wr(self._pm[s] + p, False)
         else:
-            entry = self._pm[self._pm[self._pm[s] + p] + w]
+            try:
+                entry = self._pm[self._pm[self._pm[s] + p] + w]
+            except PFError:
+                self._outfile.write("pf ")
+                return
             self._outfile.write(str(entry) + ' ')
 
     # TODO
     def _read(self, s, p, w):
-        seg_entry = self._pm[s]
-        if self._eval_addr_for_rd(seg_entry):
-            pt_entry = self._pm[self._pm[s] + p]
-            if self._eval_addr_for_rd(pt_entry):
-                page_entry = pt_entry + w
-                self._outfile.write(str(page_entry) + ' ')
+        try:
+            entry = self._pm[self._pm[self._pm[s] + p] + w]
+        except PFError:
+            self._outfile.write("pf ")
+            return
+
+        if self._eval_addr_for_rd(entry):
+            self._outfile.write(str(entry) + ' ')
+
 
     def _split_virtual_address(self, decimal_value):
         bin_to_dec = lambda bin_num : int(bin_num, 2)
@@ -42,24 +50,20 @@ class CPU:
         w_bin = binary_number[19:]
         return bin_to_dec(s_bin), bin_to_dec(p_bin), bin_to_dec(w_bin)
 
-    def _eval_addr_for_rd(self, num):
-        if num == -1:
-            self._outfile.write('pf ')
-        elif num == 0:
+    def _eval_addr_for_rd(self, idx):
+        addr = self._pm[idx]
+        if addr == 0:
             self._outfile.write('err ')
-        else:
-            return True
-        return False
+        return addr
 
     def _eval_addr_for_wr(self, idx, is_page_table):
         addr = self._pm[idx]
-
-        if addr == -1:
-            self._outfile.write('pf ')
-        elif addr == 0:
+        if addr == 0:
             if is_page_table:
                 self._pm.fralloc(idx, 2)
             else:
                 self._pm.fralloc(idx, 1)
-
         return addr
+
+    def __del__(self):
+        self._outfile.close()

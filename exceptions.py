@@ -15,3 +15,7 @@ class IsNotNumericalValue(AttributeError):
 class ValueTooLarge(AttributeError):
     def __str__(self):
         return "Error: Value is too large"
+
+class PFError(IndexError):
+    def __str__(self):
+        return "Error: Found -1"

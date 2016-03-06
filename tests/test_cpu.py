@@ -14,8 +14,7 @@ class TestCPU(unittest.TestCase):
         self.cpu = CPU(OUTPUT_FILE, INITFILE, VAFILE)
 
     def test_convert_va_to_pa(self):
-        # self.cpu.convert_va_to_pa(False)
-        pass
+        self.cpu.convert_va_to_pa(False)
 
     def test_write(self):
         self.cpu._write(0, 0, 0)
