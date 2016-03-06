@@ -15,3 +15,13 @@ class IsNotNumericalValue(AttributeError):
 class ValueTooLarge(AttributeError):
     def __str__(self):
         return "Error: Value is too large"
+
+
+class ValueCannotBeNegative(AttributeError):
+    def __str__(self):
+        return "Error: Value cannot be less than 0"
+
+
+class IsNotStringValue(AttributeError):
+    def __str__(self):
+        return "Error: Value is not type String"

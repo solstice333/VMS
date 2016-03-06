@@ -17,7 +17,7 @@ class CPU:
             pass
         else:
             for wr, va in self._pairs_of_virtual_addresses.get_pairs():
-                s, p, w = self._split_virtual_address(va)
+                s, p, w = self._split_virtual_address_to_ints(va)
                 if wr == 1:  # Write only
                     self._write(s, p, w)
                 else:  # Ready only
@@ -25,9 +25,9 @@ class CPU:
 
     def _write(self, s, p, w):
         seg_entry = self._pm[s]
-        if self._eval_addr_for_wr(seg_entry, 1):
+        if self._eval_addr_for_wr(seg_entry, 2):
             pt_entry = self._pm[self._pm[s] + p]
-            if self._eval_addr_for_wr(pt_entry, 2):
+            if self._eval_addr_for_wr(pt_entry, 1):
                 page_entry = pt_entry + w
                 self._outfile.write(str(page_entry) + ' ')
 
@@ -39,13 +39,21 @@ class CPU:
                 page_entry = pt_entry + w
                 self._outfile.write(str(page_entry) + ' ')
 
-    def _split_virtual_address(self, decimal_value):
-        bin_to_dec = lambda bin_num : int(bin_num, 2)
+
+    def _split_virtual_address_to_ints(self, decimal_value):
+        bin_to_dec = lambda bin_num: int(bin_num, 2)
         binary_number = "{0:028b}".format(decimal_value)
         s_bin = binary_number[:9]
         p_bin = binary_number[9:19]
         w_bin = binary_number[19:]
         return bin_to_dec(s_bin), bin_to_dec(p_bin), bin_to_dec(w_bin)
+
+    def _split_virtual_address_to_strs(self, decimal_value):
+        bin_to_dec = lambda bin_num: int(bin_num, 2)
+        binary_number = "{0:028b}".format(decimal_value)
+        sp_bin = binary_number[:19]
+        w_bin = binary_number[19:]
+        return sp_bin, w_bin
 
 
     def _eval_addr_for_rd(self, num):
@@ -65,6 +73,8 @@ class CPU:
         elif num == 0:
             if one_or_two_bits == 1:
                 self._pm.set_next_empty_bit()
+                #update the corresponding entries in the segment and page table
             else:
                 self._pm.set_next_empty_pair_bits()
+                #update the corresponding entries in the segment and page table
         return True

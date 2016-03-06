@@ -51,7 +51,7 @@ class PM:
     def set_next_empty_pair_bits(self):
         i = self._bitmap.find_next_empty_pair_bits()
         self._bitmap.set_bit(i)
-        self._bitmap.set_bit(i+1)
+        self._bitmap.set_bit(i + 1)
 
     def _init_seg_table(self):
         for s, address_of_page_table in self._parser.get_pairs():
