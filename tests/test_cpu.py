@@ -10,20 +10,19 @@ VAFILE = INPUT_PATH + "input2.txt"
 
 
 class TestCPU(unittest.TestCase):
-    def setUp(self):
-        self.cpu = CPU(OUTPUT_FILE, INITFILE, VAFILE)
-
     def test_convert_va_to_pa(self):
-        self.cpu.convert_va_to_pa(False)
+        cpu = CPU(INPUT_PATH + "foo.txt", INITFILE, VAFILE)
+        cpu.convert_va_to_pa(False)
 
     def test_write(self):
-        self.cpu._write(0, 0, 0)
-        self.assertEqual(str(self.cpu._pm._bitmap), "0x7f")
-        self.assertEqual(self.cpu._pm[0], 1024)
-        self.assertEqual(self.cpu._pm[2], 2048)
-        self.assertEqual(self.cpu._pm[2048], 512)
-        self.assertEqual(self.cpu._pm[2049], -1)
-        self.assertEqual(self.cpu._pm[1024], 3072)
+        cpu = CPU(OUTPUT_FILE, INITFILE, VAFILE)
+        cpu._write(0, 0, 0)
+        self.assertEqual(str(cpu._pm._bitmap), "0x7f")
+        self.assertEqual(cpu._pm[0], 1024)
+        self.assertEqual(cpu._pm[2], 2048)
+        self.assertEqual(cpu._pm[2048], 512)
+        self.assertEqual(cpu._pm[2049], -1)
+        self.assertEqual(cpu._pm[1024], 3072)
 
 if __name__ == "__main__":
     unittest.main()
