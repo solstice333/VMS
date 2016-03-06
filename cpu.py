@@ -1,5 +1,6 @@
 from pm import *
 from tlb import *
+from exceptions import *
 
 
 class CPU:
@@ -25,18 +26,25 @@ class CPU:
         if not self._alloc(s, True):
             self._alloc(self._pm[s] + p, False)
         else:
-            entry = self._pm[self._pm[s] + p] + w
-            if entry > 0:
+            entry = 0
+            try:
+                self._eval(self._pm[s]) and self._eval(self._pm[self._pm[s] + p])
+                entry = self._eval(self._pm[self._pm[s] + p] + w)
+            except ZeroError:
+                self._outfile.write('err ')
+            except PFError:
+                self._outfile.write('pf ')
+            else:
                 self._outfile.write("{0} ".format(entry))
-            elif entry < 0:
-                self._outfile.write("pf ")
 
     def _read(self, s, p, w):
-        entry = self._pm[self._pm[s] + p] + w
-
-        if entry == 0:
+        entry = 0
+        try:
+            self._eval(self._pm[s]) and self._eval(self._pm[self._pm[s] + p])
+            entry = self._eval(self._pm[self._pm[s] + p] + w)
+        except ZeroError:
             self._outfile.write('err ')
-        elif entry < 0:
+        except PFError:
             self._outfile.write('pf ')
         else:
             self._outfile.write("{0} ".format(entry))
@@ -54,6 +62,14 @@ class CPU:
         sp_bin = binary_number[:19]
         w_bin = binary_number[19:]
         return sp_bin, w_bin
+
+    def _eval(self, addr):
+        if addr == 0:
+            raise ZeroError
+        elif addr < 0:
+            raise PFError
+        else:
+            return addr
 
     def _alloc(self, idx, is_page_table):
         addr = self._pm[idx]

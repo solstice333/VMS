@@ -23,3 +23,7 @@ class PFError(IndexError):
 class IsNotStringValue(AttributeError):
     def __str__(self):
         return "Error: Value is not type String"
+
+class ZeroError(AttributeError):
+    def __str__(self):
+        return "Error: Zero Error"
