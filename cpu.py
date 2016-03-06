@@ -12,7 +12,7 @@ class CPU:
             pass
         else:
             for wr, va in self._pairs_of_virtual_addresses.get_pairs():
-                s, p, w = self._split_virtual_address(va)
+                s, p, w = self._split_virtual_address_to_ints(va)
 
                 if wr == 1:  # Write only
                     self._write(s, p, w)
@@ -42,13 +42,21 @@ class CPU:
             self._outfile.write(str(entry) + ' ')
 
 
-    def _split_virtual_address(self, decimal_value):
-        bin_to_dec = lambda bin_num : int(bin_num, 2)
+
+    def _split_virtual_address_to_ints(self, decimal_value):
+        bin_to_dec = lambda bin_num: int(bin_num, 2)
         binary_number = "{0:028b}".format(decimal_value)
         s_bin = binary_number[:9]
         p_bin = binary_number[9:19]
         w_bin = binary_number[19:]
         return bin_to_dec(s_bin), bin_to_dec(p_bin), bin_to_dec(w_bin)
+
+    def _split_virtual_address_to_strs(self, decimal_value):
+        bin_to_dec = lambda bin_num: int(bin_num, 2)
+        binary_number = "{0:028b}".format(decimal_value)
+        sp_bin = binary_number[:19]
+        w_bin = binary_number[19:]
+        return sp_bin, w_bin
 
     def _eval_addr_for_rd(self, idx):
         addr = self._pm[idx]

@@ -19,3 +19,7 @@ class ValueTooLarge(AttributeError):
 class PFError(IndexError):
     def __str__(self):
         return "Error: Found -1"
+
+class IsNotStringValue(AttributeError):
+    def __str__(self):
+        return "Error: Value is not type String"
