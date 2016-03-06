@@ -1,7 +1,6 @@
 import unittest
 from cpu import CPU
-import os
-
+import re
 
 INPUT_PATH = "../resources/"
 OUTPUT_FILE = INPUT_PATH + '76027548.txt'
@@ -13,6 +12,14 @@ class TestCPU(unittest.TestCase):
     def test_convert_va_to_pa(self):
         cpu = CPU(INPUT_PATH + "foo.txt", INITFILE, VAFILE)
         cpu.convert_va_to_pa(False)
+        cpu.flush()
+
+        with open(INPUT_PATH + "foo.txt") as file:
+            elems = re.findall(r"(\w+)\s*", file.readline(), re.I)
+            self.assertEqual(elems[0], "err")
+            self.assertEqual(elems[1], "512")
+            self.assertEqual(elems[2], "522")
+            self.assertEqual(elems[3], "pf")
 
     def test_write(self):
         cpu = CPU(OUTPUT_FILE, INITFILE, VAFILE)

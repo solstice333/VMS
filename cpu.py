@@ -22,27 +22,24 @@ class CPU:
                     self._read(s, p, w)
 
     def _write(self, s, p, w):
-        if not self._eval_addr_for_wr(s, True):
-            self._eval_addr_for_wr(self._pm[s] + p, False)
+        if not self._alloc(s, True):
+            self._alloc(self._pm[s] + p, False)
         else:
-            try:
-                entry = self._pm[self._pm[self._pm[s] + p] + w]
-            except PFError:
+            entry = self._pm[self._pm[s] + p] + w
+            if entry > 0:
+                self._outfile.write("{0} ".format(entry))
+            elif entry < 0:
                 self._outfile.write("pf ")
-                return
-            self._outfile.write(str(entry) + ' ')
 
     def _read(self, s, p, w):
-        try:
-            entry = self._pm[self._pm[self._pm[s] + p] + w]
-        except PFError:
-            self._outfile.write("pf ")
-            return
+        entry = self._pm[self._pm[s] + p] + w
 
-        if self._eval_addr_for_rd(entry):
-            self._outfile.write(str(entry) + ' ')
-
-
+        if entry == 0:
+            self._outfile.write('err ')
+        elif entry < 0:
+            self._outfile.write('pf ')
+        else:
+            self._outfile.write("{0} ".format(entry))
 
     def _split_virtual_address_to_ints(self, decimal_value):
         bin_to_dec = lambda bin_num: int(bin_num, 2)
@@ -58,13 +55,7 @@ class CPU:
         w_bin = binary_number[19:]
         return sp_bin, w_bin
 
-    def _eval_addr_for_rd(self, idx):
-        addr = self._pm[idx]
-        if addr == 0:
-            self._outfile.write('err ')
-        return addr
-
-    def _eval_addr_for_wr(self, idx, is_page_table):
+    def _alloc(self, idx, is_page_table):
         addr = self._pm[idx]
         if addr == 0:
             if is_page_table:
@@ -72,6 +63,9 @@ class CPU:
             else:
                 self._pm.fralloc(idx, 1)
         return addr
+
+    def flush(self):
+        self._outfile.flush()
 
     def __del__(self):
         self._outfile.close()
