@@ -1,16 +1,11 @@
 from pm import *
 
-INPUT_PATH = "resources/"
-INPUT_FILE = "pm.txt"
-INPUT_FILE_2 = "input2.txt"
-
 
 class CPU:
-    def __init__(self, outfile):
-        self._outfile = outfile
-        self._pm = PM(INPUT_PATH + INPUT_FILE)
-        self._pairs_of_virtual_addresses = Parser(INPUT_PATH + INPUT_FILE_2)
-
+    def __init__(self, outfile, initfile, vafile):
+        self._outfile = open(outfile, "w")
+        self._pm = PM(initfile)
+        self._pairs_of_virtual_addresses = Parser(vafile)
 
     def convert_va_to_pa(self, tlb):
         if tlb:
@@ -24,13 +19,13 @@ class CPU:
                     self._read(s, p, w)
 
     def _write(self, s, p, w):
-        seg_entry = self._pm[s]
-        if self._eval_addr_for_wr(seg_entry, 1):
-            pt_entry = self._pm[self._pm[s] + p]
-            if self._eval_addr_for_wr(pt_entry, 2):
-                page_entry = pt_entry + w
-                self._outfile.write(str(page_entry) + ' ')
+        if not self._eval_addr_for_wr(s, True):
+            self._eval_addr_for_wr(self._pm[s] + p, False)
+        else:
+            entry = self._pm[self._pm[self._pm[s] + p] + w]
+            self._outfile.write(str(entry) + ' ')
 
+    # TODO
     def _read(self, s, p, w):
         seg_entry = self._pm[s]
         if self._eval_addr_for_rd(seg_entry):
@@ -47,7 +42,6 @@ class CPU:
         w_bin = binary_number[19:]
         return bin_to_dec(s_bin), bin_to_dec(p_bin), bin_to_dec(w_bin)
 
-
     def _eval_addr_for_rd(self, num):
         if num == -1:
             self._outfile.write('pf ')
@@ -57,14 +51,15 @@ class CPU:
             return True
         return False
 
+    def _eval_addr_for_wr(self, idx, is_page_table):
+        addr = self._pm[idx]
 
-    def _eval_addr_for_wr(self, num, one_or_two_bits):
-        if num == -1:
+        if addr == -1:
             self._outfile.write('pf ')
-            return False
-        elif num == 0:
-            if one_or_two_bits == 1:
-                self._pm.set_next_empty_bit()
+        elif addr == 0:
+            if is_page_table:
+                self._pm.fralloc(idx, 2)
             else:
-                self._pm.set_next_empty_pair_bits()
-        return True
+                self._pm.fralloc(idx, 1)
+
+        return addr

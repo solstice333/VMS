@@ -48,7 +48,6 @@ class PM:
 
         self._frames[idx // Frame.SIZE][idx % Frame.SIZE] = value
 
-    # TODO
     def fralloc(self, idx, numframes):
         if (numframes <= 0):
             pass
