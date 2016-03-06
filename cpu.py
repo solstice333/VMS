@@ -26,16 +26,7 @@ class CPU:
         if not self._alloc(s, True):
             self._alloc(self._pm[s] + p, False)
         else:
-            entry = 0
-            try:
-                self._eval(self._pm[s]) and self._eval(self._pm[self._pm[s] + p])
-                entry = self._eval(self._pm[self._pm[s] + p] + w)
-            except ZeroError:
-                self._outfile.write('err ')
-            except PFError:
-                self._outfile.write('pf ')
-            else:
-                self._outfile.write("{0} ".format(entry))
+            self._read(s, p, w)
 
     def _read(self, s, p, w):
         entry = 0
