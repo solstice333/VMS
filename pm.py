@@ -32,6 +32,27 @@ class PM:
 
         return self._frames[idx // Frame.SIZE][idx % Frame.SIZE]
 
+    def __setitem__(self, key, value):
+        if type(key) is not int or type(value) is not int:
+            raise IsNotNumericalValue
+
+        if key < 0 or key >= PM.SIZE * Frame.SIZE:
+            raise IndexError("PM index out of range")
+
+        if value > 2**32 - 1:
+            raise ValueTooLarge
+
+        self._frames[key // Frame.SIZE][key % Frame.SIZE] = value
+
+    def set_next_empty_bit(self):
+        i = self._bitmap.find_next_empty_bit()
+        self._bitmap.set_bit(i)
+
+    def set_next_empty_bits(self):
+        i = self._bitmap.find_next_empty_bits()
+        self._bitmap.set_bit(i)
+        self._bitmap.set_bit(i+1)
+
     def _init_seg_table(self):
         for s, address_of_page_table in self._parser.get_pairs():
             self._seg_table[s] = address_of_page_table
