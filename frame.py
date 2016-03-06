@@ -29,7 +29,7 @@ class Frame:
         self._words[key] = value
 
     def __repr__(self):
-        return str(self._words) + "\n"
+        return str(self._words)
 
     @classmethod
     def get_size(cls):
