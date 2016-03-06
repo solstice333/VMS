@@ -12,15 +12,28 @@ class CPU:
 
     def convert_va_to_pa(self, tlb):
         if tlb:
-            pass
+            for wr, va in self._pairs_of_virtual_addresses.get_pairs():
+                sp, w = self._split_virtual_address_to_strs(va)
+                index = self._tlb.find_matching_buffer(sp)
+
+                if index == -1:  # reusing code from else...
+                    self._read_write(wr, va)
+                    self._tlb.replace_old_buffer(sp)
+                else:
+                    self._tlb.update_matching_buffer(index)
+                    page_entry = self._tlb.get_f(index) + int(w, 2)
+                    self._outfile.write(str(page_entry) + " ")
         else:
             for wr, va in self._pairs_of_virtual_addresses.get_pairs():
-                s, p, w = self._split_virtual_address_to_ints(va)
+                self._read_write(wr, va)
 
-                if wr == 1:  # Write only
-                    self._write(s, p, w)
-                else:  # Ready only
-                    self._read(s, p, w)
+    def _read_write(self, wr, va):
+        s, p, w = self._split_virtual_address_to_ints(va)
+
+        if wr == 1:  # Write only
+            self._write(s, p, w)
+        else:  # Ready only
+            self._read(s, p, w)
 
     def _write(self, s, p, w):
         if not self._alloc(s, True):

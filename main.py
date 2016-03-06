@@ -9,7 +9,7 @@ VAFILE = INPUT_PATH + "input2.txt"
 
 def main():
     cpu = CPU(OUTPUT_FILE, INITFILE, VAFILE)
-    cpu.convert_va_to_pa(False)
+    cpu.convert_va_to_pa(True)
 
 
 if __name__ == '__main__':

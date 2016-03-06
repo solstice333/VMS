@@ -6,8 +6,8 @@ class Buffer:
 
     def __init__(self):
         self._lru_value = 0
-        self._sp = 0
-        self._f = 0
+        self._sp = -1
+        self._f = -1
 
     def get_lru_value(self):
         return self._lru_value
@@ -42,25 +42,36 @@ class TLB:
         self._outfile = outfile
         self._buffers = [Buffer() for i in range(TLB.SIZE)]
 
+    def get_f(self, idx):
+        return self._buffers[idx].get_f()
+
     def find_matching_buffer(self, sp):
         for i in range(TLB.SIZE):
+            # print(i, self._buffers[i].get_lru_value(), self._buffers[i].get_sp(), self._buffers[i].get_f())
             if self._buffers[i].get_sp() == int(sp, 2):
                 self._outfile.write('h ')
+                # print()
                 return i
+        # print()
         self._outfile.write('m ')
         return -1
 
+    def update_matching_buffer(self, idx):
+        self._buffers[idx].max_lru_value()
+        self._decrement_all_lru_except_idx(idx)
 
     def replace_old_buffer(self, sp):
         idx = self._find_old_buffer_idx()
-        s = int(sp[:9])
-        p = int(sp[9:])
+        s = int(sp[:9], 2)
+        p = int(sp[9:], 2)
 
         pm = self._pm
         self._buffers[idx].max_lru_value()
         self._buffers[idx].set_sp(sp)
         self._buffers[idx].set_f(pm[pm[s] + p])
+        self._decrement_all_lru_except_idx(idx)
 
+    def _decrement_all_lru_except_idx(self, idx):
         for i in range(TLB.SIZE):
             if idx == i:
                 continue

@@ -52,7 +52,7 @@ class PM:
         self._frames[idx // Frame.SIZE][idx % Frame.SIZE] = value
 
     def fralloc(self, idx, numframes):
-        if (numframes <= 0):
+        if numframes <= 0:
             pass
 
         fidx = self._bitmap.get_next_empty_bits(numframes)
