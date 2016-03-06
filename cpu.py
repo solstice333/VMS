@@ -30,7 +30,6 @@ class CPU:
                 return
             self._outfile.write(str(entry) + ' ')
 
-    # TODO
     def _read(self, s, p, w):
         try:
             entry = self._pm[self._pm[self._pm[s] + p] + w]
