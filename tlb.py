@@ -1,5 +1,6 @@
 from exceptions import *
 
+
 class Buffer:
     MAX_LRU_VALUE = 3
 
@@ -30,7 +31,7 @@ class Buffer:
         self._sp = int(sp, 2)
 
     def set_f(self, pt_entry):
-        self._f = pt_entry # which holds the address to the page
+        self._f = pt_entry  # which holds the address to the page
 
 
 class TLB:
@@ -39,7 +40,7 @@ class TLB:
     def __init__(self, physical_memory, outfile):
         self._pm = physical_memory
         self._outfile = outfile
-        self._buffers = [Buffer() for i range(TLB.SIZE)]
+        self._buffers = [Buffer() for i in range(TLB.SIZE)]
 
     def find_matching_buffer(self, sp):
         for i in range(TLB.SIZE):

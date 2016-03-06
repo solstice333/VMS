@@ -1,4 +1,5 @@
 from pm import *
+from tlb import *
 
 INPUT_PATH = "resources/"
 INPUT_FILE = "pm.txt"
@@ -10,6 +11,7 @@ class CPU:
         self._outfile = outfile
         self._pm = PM(INPUT_PATH + INPUT_FILE)
         self._pairs_of_virtual_addresses = Parser(INPUT_PATH + INPUT_FILE_2)
+        self._tlb = TLB(self._pm, self._outfile)
 
 
     def convert_va_to_pa(self, tlb):
@@ -49,7 +51,6 @@ class CPU:
         return bin_to_dec(s_bin), bin_to_dec(p_bin), bin_to_dec(w_bin)
 
     def _split_virtual_address_to_strs(self, decimal_value):
-        bin_to_dec = lambda bin_num: int(bin_num, 2)
         binary_number = "{0:028b}".format(decimal_value)
         sp_bin = binary_number[:19]
         w_bin = binary_number[19:]

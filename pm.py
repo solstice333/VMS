@@ -67,7 +67,7 @@ class PM:
             address_of_page_table = self._seg_table[s]
 
             if address_of_page_table != -1:
-                idx = PM.get_index_from_words(address_of_page_table) # self._seg_table[s] should always be a power of 2...
+                idx = PM.get_index_from_words(address_of_page_table)  # self._seg_table[s] should always be a power of 2
 
                 self._frames[idx][p] = address_of_page
                 if address_of_page != -1:
