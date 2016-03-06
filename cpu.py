@@ -1,27 +1,43 @@
 from pm import *
 
 INPUT_PATH = "resources/"
+INPUT_FILE = "pm.txt"
+INPUT_FILE_2 = "input2.txt"
 
 
 class CPU:
     def __init__(self, outfile):
         self._outfile = outfile
-        self._pm = PM(INPUT_PATH + "pm.txt")
+        self._pm = PM(INPUT_PATH + INPUT_FILE)
+        self._pairs_of_virtual_addresses = Parser(INPUT_PATH + INPUT_FILE_2)
 
-        virtual_addresses = Parser(INPUT_PATH + 'input2.txt')
-        for wr, va in virtual_addresses.get_pairs():
-            s, p, w = self._split_virtual_address(va)
-            if wr == 1:  # Write only
-                seg_entry = self._pm[s]
-                if self._eval_addr_for_wr(seg_entry, 1):
-                    pt_entry = self._pm[self._pm[s] + p]
-                    if self._eval_addr_for_wr(pt_entry, 2):
-                        self._outfile.write(str(self._pm[self._pm[s] + p] + w) + ' ')
-            else:  # Ready only
-                if self._eval_addr_for_rd(self._pm[s]):
-                    if self._eval_addr_for_rd(self._pm[self._pm[s] + p]):
-                        self._outfile.write(str(self._pm[self._pm[s] + p] + w) + ' ')
 
+    def convert_va_to_pa(self, tlb):
+        if tlb:
+            pass
+        else:
+            for wr, va in self._pairs_of_virtual_addresses.get_pairs():
+                s, p, w = self._split_virtual_address(va)
+                if wr == 1:  # Write only
+                    self._write(s, p, w)
+                else:  # Ready only
+                    self._read(s, p, w)
+
+    def _write(self, s, p, w):
+        seg_entry = self._pm[s]
+        if self._eval_addr_for_wr(seg_entry, 1):
+            pt_entry = self._pm[self._pm[s] + p]
+            if self._eval_addr_for_wr(pt_entry, 2):
+                page_entry = pt_entry + w
+                self._outfile.write(str(page_entry) + ' ')
+
+    def _read(self, s, p, w):
+        seg_entry = self._pm[s]
+        if self._eval_addr_for_rd(seg_entry):
+            pt_entry = self._pm[self._pm[s] + p]
+            if self._eval_addr_for_rd(pt_entry):
+                page_entry = pt_entry + w
+                self._outfile.write(str(page_entry) + ' ')
 
     def _split_virtual_address(self, decimal_value):
         bin_to_dec = lambda bin_num : int(bin_num, 2)

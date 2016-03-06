@@ -8,6 +8,7 @@ OUTPUT_FILE = INPUT_PATH + '76027548.txt'
 def main():
     outfile = open(OUTPUT_FILE, 'w')
     cpu = CPU(outfile)
+    cpu.convert_va_to_pa(False)
     outfile.close()
 
 
