@@ -49,16 +49,28 @@ class Bitmap:
             raise TooDamnMuchDammitError
         return bool(self._fatass & 1 << bitnum)
 
-    def find_next_empty_bit(self):
-        for i in range(Bitmap.MAX_BIT + 1):
-            if not self.is_bit_set(i):
-                return i
-        return -1
+    # find_next_empty_bit() : returns the zero based bit number of the 
+    # beginning block of bits that have not been set. |numbits| is the
+    # number of bits required to be free. For example, if |numbits| was 2
+    # and the returned value was 10, then bit 10 and bit 11 are unset.
+    def get_next_empty_bits(self, numbits):
+        if numbits <= 0:
+            return -1
 
-    def find_next_empty_pair_bits(self):
-        for i in range(Bitmap.MAX_BIT):
-            if not self.is_bit_set(i) and not self.is_bit_set(i + 1):
-                return i
+        for i in range(Bitmap.MAX_BIT + 1):
+            nextbit = False
+
+            for j in range(numbits):
+                if i + j > Bitmap.MAX_BIT:
+                    return -1
+                if self.is_bit_set(i + j):
+                    nextbit = True
+                    break
+
+            if nextbit:
+                continue
+            return i
+
         return -1
 
     # __str__(): string representation of a Bitmap instance is its hex
