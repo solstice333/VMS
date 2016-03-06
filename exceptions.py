@@ -16,11 +16,9 @@ class ValueTooLarge(AttributeError):
     def __str__(self):
         return "Error: Value is too large"
 
-
-class ValueCannotBeNegative(AttributeError):
+class PFError(IndexError):
     def __str__(self):
-        return "Error: Value cannot be less than 0"
-
+        return "Error: Found -1"
 
 class IsNotStringValue(AttributeError):
     def __str__(self):
