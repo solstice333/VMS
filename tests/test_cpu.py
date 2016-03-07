@@ -31,5 +31,17 @@ class TestCPU(unittest.TestCase):
         self.assertEqual(cpu._pm[2049], -1)
         self.assertEqual(cpu._pm[1024], 3072)
 
+    def test_broken_stuff(self):
+        cpu = CPU(INPUT_PATH + "foo.txt", INPUT_PATH + "initPMTestCases.txt",\
+         INPUT_PATH + "initVATestCases.txt")
+        cpu.convert_va_to_pa(False)
+        cpu.flush()
+
+        with open(INPUT_PATH + "foo.txt") as file:
+            elems = re.findall(r"(\w+)\s*", file.readline(), re.I)
+            self.assertEqual(elems[0], "1400")
+            self.assertEqual(elems[1], "1400")
+            self.assertEqual(elems[2], "1952")
+
 if __name__ == "__main__":
     unittest.main()

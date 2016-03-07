@@ -97,7 +97,6 @@ class CPU:
                 self._pm.fralloc(idx, 2)
             else:
                 self._pm.fralloc(idx, 1)
-                self._pm._bitmap.set_bit(PM.get_words_from_index(addr))
         return addr
 
     def flush(self):
