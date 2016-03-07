@@ -36,21 +36,19 @@ class CPU:
             self._read(s, p, w)
 
     def _write(self, s, p, w):
-        if not self._alloc(s, True):
-            self._alloc(self._pm[s] + p, False)
-        else:
-            self._read(s, p, w)
+        self._safe_alloc(s, p)
+        self._read(s, p, w)
 
     def _read(self, s, p, w):
         entry = 0
         try:
-            self._eval(self._pm[s]) and self._eval(self._pm[self._pm[s] + p])
-            entry = self._eval(self._pm[self._pm[s] + p] + w)
+            self._eval(s) and self._eval(self._pm[s] + p)
         except ZeroError:
             self._outfile.write('err ')
         except PFError:
             self._outfile.write('pf ')
         else:
+            entry = self._pm[self._pm[s] + p] + w
             self._outfile.write("{0} ".format(entry))
 
     def _split_virtual_address_to_ints(self, decimal_value):
@@ -67,13 +65,30 @@ class CPU:
         w_bin = binary_number[19:]
         return sp_bin, w_bin
 
-    def _eval(self, addr):
+    def _eval(self, idx):
+        addr = self._pm[idx]
         if addr == 0:
             raise ZeroError
         elif addr < 0:
             raise PFError
         else:
             return addr
+
+    def _safe_alloc(self, s, p):
+        try:
+            self._eval(s)
+        except ZeroError:
+            self._alloc(s, True)
+            self._alloc(self._pm[s] + p, False)
+        except PFError:
+            pass
+
+        try:
+            self._eval(self._pm[s] + p)
+        except ZeroError:
+            self._alloc(self._pm[s] + p, False)
+        except PFError:
+            pass
 
     def _alloc(self, idx, is_page_table):
         addr = self._pm[idx]
@@ -82,6 +97,7 @@ class CPU:
                 self._pm.fralloc(idx, 2)
             else:
                 self._pm.fralloc(idx, 1)
+                self._pm._bitmap.set_bit(PM.get_words_from_index(addr))
         return addr
 
     def flush(self):
