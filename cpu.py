@@ -9,16 +9,19 @@ class CPU:
         self._pm = PM(initfile)
         self._pairs_of_virtual_addresses = Parser(vafile)
         self._tlb = TLB(self._pm, self._outfile)
+        self._success = None
 
     def convert_va_to_pa(self, tlb):
         if tlb:
             for wr, va in self._pairs_of_virtual_addresses.get_pairs():
+                self._success = True
                 sp, w = self._split_virtual_address_to_strs(va)
                 index = self._tlb.find_matching_buffer(sp)
 
                 if index == -1:  # reusing code from else...
                     self._read_write(wr, va)
-                    self._tlb.replace_old_buffer(sp)
+                    if self._success:
+                        self._tlb.replace_old_buffer(sp)
                 else:
                     self._tlb.update_matching_buffer(index)
                     page_entry = self._tlb.get_f(index) + int(w, 2)
@@ -45,8 +48,10 @@ class CPU:
             self._eval(s) and self._eval(self._pm[s] + p)
         except ZeroError:
             self._outfile.write('err ')
+            self._success = False
         except PFError:
             self._outfile.write('pf ')
+            self._success = False
         else:
             entry = self._pm[self._pm[s] + p] + w
             self._outfile.write("{0} ".format(entry))

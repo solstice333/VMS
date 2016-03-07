@@ -33,6 +33,9 @@ class Buffer:
     def set_f(self, pt_entry):
         self._f = pt_entry  # which holds the address to the page
 
+    def __repr__(self):
+        return "lru: {0} sp: {1} f: {2}".format(self._lru_value, self._sp, self._f)
+
 
 class TLB:
     SIZE = 4
@@ -42,17 +45,21 @@ class TLB:
         self._outfile = outfile
         self._buffers = [Buffer() for i in range(TLB.SIZE)]
 
+    def print(self):
+        for i in range(TLB.SIZE):
+            print(self._buffers[i])
+
     def get_f(self, idx):
         return self._buffers[idx].get_f()
 
+    def get_sp(self, idx):
+        return self._buffers[idx].get_sp()
+
     def find_matching_buffer(self, sp):
         for i in range(TLB.SIZE):
-            # print(i, self._buffers[i].get_lru_value(), self._buffers[i].get_sp(), self._buffers[i].get_f())
             if self._buffers[i].get_sp() == int(sp, 2):
                 self._outfile.write('h ')
-                # print()
                 return i
-        # print()
         self._outfile.write('m ')
         return -1
 
